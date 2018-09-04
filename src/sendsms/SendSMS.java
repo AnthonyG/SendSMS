@@ -5,7 +5,13 @@
  */
 package sendsms;
 
-import java.net.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+
 /**
  *
  * @author Shaikan
@@ -17,48 +23,26 @@ public class SendSMS {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
+
         try {
 
-String recipient = "+59891363936";
+            HttpPost request = new HttpPost("https://smsgateway.me/api/v4/message/send");
+            StringEntity params =new StringEntity("[{\"phone_number\": \"XXXXXXXXX\",\"message\": \"Y los free sms\",\"device_id\":\"100800\"}]");
+            request.addHeader("content-type", "application/json");
+            request.addHeader("Authorization", ""); //Paste snsgateway key
+            request.setEntity(params);
+            HttpResponse response = httpClient.execute(request);
+            System.out.println(response);
+            //handle response here...
 
-String message = "Miraloquehicejeje sms con una simple app en casa";
+        }catch (Exception ex) {
 
-String username = "admin";
+            //handle exception here
 
-String password = "admin";
-
-String originator = "+59899923343";
-
-String requestUrl  = "http://127.0.0.1:9501/api?action=sendmessage&" +
-
- "username=" + URLEncoder.encode(username, "UTF-8") +
-
- "&password=" + URLEncoder.encode(password, "UTF-8") +
-
- "&recipient=" + URLEncoder.encode(recipient, "UTF-8") +
-
- "&messagetype=SMS:TEXT" +
-
- "&messagedata=" + URLEncoder.encode(message, "UTF-8") +
-
- "&originator=" + URLEncoder.encode(originator, "UTF-8") +
-
- "&serviceprovider=GSMModem1" +
-
- "&responseformat=html";
-
-URL url = new URL(requestUrl);
-
-HttpURLConnection uc = (HttpURLConnection)url.openConnection();
-
-System.out.println(uc.getResponseMessage());
-
-uc.disconnect();
-
-} catch(Exception ex) {
-
-System.out.println(ex.getMessage());
-
-}        
+        } finally {
+            //Deprecated
+            //httpClient.getConnectionManager().shutdown(); 
+        }
     }
 }
